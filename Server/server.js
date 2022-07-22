@@ -1,11 +1,11 @@
 // START шаблон
 
-//СТАРТ Настройки
 var express = require("express");
 var fs = require("fs");
 var app = express();
 var bodyParser = require("body-parser");
-var port = 4556;
+const { STATUS_CODES } = require("http");
+var port = 9987;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.text());
@@ -32,8 +32,13 @@ app.listen(port, function () {
 });
 
 app.post("/path", function (req, resp) {
+  resp.send("respond from server");
   let str = JSON.stringify({ "Some Content": "ddd" });
-  fs.writeFile("./models/data.json", str, function (err) {
-    console.log(err, "from Err");
+  fs.readFile("../models/data.json", "utf-8", (err, data) => {
+    console.log(data);
+
+    fs.writeFile("../models/data.json", str, function (err) {
+      console.log(err, "from Err");
+    });
   });
 });

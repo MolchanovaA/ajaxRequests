@@ -4,9 +4,9 @@ function callback(e) {
   e.preventDefault();
 
   let xh = new XMLHttpRequest();
-  xh.open("POST", "http://localhost:4556/path");
+  xh.open("POST", "http://localhost:9987/path");
   xh.addEventListener("load", () => {
-    console.log(xh.response, "response");
+    console.log("response");
   });
   xh.addEventListener("error", (e) => {
     console.log(e.response, "error");
