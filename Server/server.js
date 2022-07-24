@@ -1,4 +1,4 @@
-// START шаблон
+// START template
 
 var express = require("express");
 var fs = require("fs");
@@ -25,19 +25,36 @@ app.use(function (req, res, next) {
   next();
 });
 
-//конец настройки
+//END template
 
 app.listen(port, function () {
   console.log(`Example app listening on port http://localhost:${port}/`);
 });
 
+function toCreateId(id) {
+  let toArrayID = `${id}`.split("");
+  let idLength = toArrayID.length;
+  let maxIdLength = 4;
+  let addZero = maxIdLength - idLength;
+
+  for (var i = 0; i < addZero; i++) {
+    toArrayID.unshift("0");
+  }
+
+  return toArrayID.join("");
+}
+
 app.post("/path", function (req, resp) {
   resp.send("respond from server");
-  let str = JSON.stringify({ "Some Content": "ddd" });
-  fs.readFile("../models/data.json", "utf-8", (err, data) => {
-    console.log(data);
+  let body = req.body;
+  let parsedBody = JSON.parse(body);
 
-    fs.writeFile("../models/data.json", str, function (err) {
+  fs.readFile("../models/data.json", "utf-8", (err, data) => {
+    let parsedData = JSON.parse(data);
+    parsedBody.id = toCreateId(parsedData.length);
+    parsedData.push(parsedBody);
+    let stringifyedData = JSON.stringify(parsedData);
+    fs.writeFile("../models/data.json", stringifyedData, function (err) {
       console.log(err, "from Err");
     });
   });
