@@ -1,4 +1,4 @@
-// START template
+// START of template
 
 var express = require("express");
 var fs = require("fs");
@@ -25,7 +25,7 @@ app.use(function (req, res, next) {
   next();
 });
 
-//END template
+//END of template
 
 app.listen(port, function () {
   console.log(`Example app listening on port http://localhost:${port}/`);
@@ -44,18 +44,42 @@ function toCreateId(id) {
   return toArrayID.join("");
 }
 
-app.post("/path", function (req, resp) {
-  resp.send("respond from server");
+app.post("/registration", function (req, resp) {
   let body = req.body;
   let parsedBody = JSON.parse(body);
 
   fs.readFile("../models/data.json", "utf-8", (err, data) => {
     let parsedData = JSON.parse(data);
     parsedBody.id = toCreateId(parsedData.length);
-    parsedData.push(parsedBody);
+    let currentLoginName = parsedBody.login;
+    if (!parsedData.find((item) => item.login === currentLoginName)) {
+      parsedData.push(parsedBody);
+    } else {
+      resp.send("NEED ANOTHER LOGIN NAME");
+    }
+
     let stringifyedData = JSON.stringify(parsedData);
     fs.writeFile("../models/data.json", stringifyedData, function (err) {
       console.log(err, "from Err");
     });
+  });
+});
+
+app.post("/authorisation", function (req, resp) {
+  let body = req.body;
+  let parsedBody = JSON.parse(body);
+  fs.readFile("../models/data.json", "utf-8", (err, data) => {
+    let parsedData = JSON.parse(data);
+    let currentLoginName = parsedBody.login;
+    let currentPass = parsedBody.pass;
+    let loginCheck = parsedData.find(
+      (item) => item.login === currentLoginName && item.pass === currentPass
+    );
+    console.log(loginCheck, "logincheck");
+    if (!loginCheck) {
+      resp.send("no such User");
+      return;
+    }
+    resp.send(`your ID is ${loginCheck.id}`);
   });
 });
